@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AMTGC | Adaptive Multi-Junction Traffic Grid Controller</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="hero">
+  <nav><div class="brand">AMTGC</div><div class="navlinks"><a href="#architecture">Architecture</a><a href="#simulator">Simulator</a><a href="#verification">Verification</a><a href="#deliverables">Deliverables</a></div></nav>
+  <div class="hero-grid">
+    <div><span class="eyebrow">RTL / SystemVerilog Internship Project</span><h1>Adaptive Multi-Junction Traffic Grid Controller</h1><p>Two coordinated traffic junctions with parameterized timing, green-wave synchronization, fair pedestrian arbitration, emergency override, and traffic-adaptive green phases.</p><a class="btn primary" href="#simulator">Run Interactive Demo</a></div>
+    <div class="hero-card"><div class="pulse"></div><span>Single Clock Domain</span><strong>Safe • Modular • Parameterized</strong><small>Tasks 1–6 implementation</small></div>
+  </div>
+</header>
+
+<main>
+<section class="stats"><div><b>2</b><span>Junctions</span></div><div><b>7+</b><span>FSM phases</span></div><div><b>3-bit</b><span>Traffic density</span></div><div><b>Fair</b><span>Round-robin arbiter</span></div></section>
+
+<section id="architecture" class="section"><div class="section-title"><span>01</span><h2>System Architecture</h2></div>
+<div class="architecture">
+  <div class="node source">Clock + Reset<br><small>Single synchronous domain</small></div>
+  <div class="arrow">↓</div>
+  <div class="row">
+    <div class="node"><b>Junction A</b><small>Moore FSM<br>Adaptive timing<br>Generic timer</small></div>
+    <div class="node controller"><b>Green-Wave Controller</b><small>A NS-green → bounded B trigger</small></div>
+    <div class="node"><b>Junction B</b><small>Moore FSM<br>Adaptive timing<br>Generic timer</small></div>
+  </div>
+  <div class="row lower">
+    <div class="node"><b>Pedestrian Arbiter</b><small>Round-robin fairness<br>No starvation</small></div>
+    <div class="node danger"><b>Emergency Override</b><small>Both junctions → ALL RED</small></div>
+  </div>
+</div></section>
+
+<section id="simulator" class="section"><div class="section-title"><span>02</span><h2>Interactive Traffic Simulator</h2></div>
+<p class="muted">This browser demo mirrors the implemented architecture. Use the controls to demonstrate traffic density, pedestrian requests, green-wave operation, and emergency override.</p>
+<div class="controls">
+  <button id="runBtn" class="btn primary">Pause</button><button id="resetBtn" class="btn">Reset</button><button id="emergencyBtn" class="btn danger-btn">Emergency OFF</button>
+  <label>Density A <input id="densityA" type="range" min="0" max="7" value="2"><b id="densityAVal">2</b></label>
+  <label>Density B <input id="densityB" type="range" min="0" max="7" value="2"><b id="densityBVal">2</b></label>
+  <button id="pedABtn" class="btn">Pedestrian A</button><button id="pedBBtn" class="btn">Pedestrian B</button>
+</div>
+<div class="sim-grid">
+  <article class="junction-card"><div class="card-head"><h3>Junction A</h3><span id="stateA" class="state">ALL RED</span></div><div class="lights"><div class="signal"><i id="a-r"></i><i id="a-y"></i><i id="a-g"></i></div><div class="signal"><i id="a-er"></i><i id="a-ey"></i><i id="a-eg"></i></div></div><div class="phase"><span>Phase time</span><b id="timeA">0</b></div><div class="phase"><span>Pedestrian</span><b id="pedA">IDLE</b></div></article>
+  <article class="junction-card"><div class="card-head"><h3>Junction B</h3><span id="stateB" class="state">ALL RED</span></div><div class="lights"><div class="signal"><i id="b-r"></i><i id="b-y"></i><i id="b-g"></i></div><div class="signal"><i id="b-er"></i><i id="b-ey"></i><i id="b-eg"></i></div></div><div class="phase"><span>Phase time</span><b id="timeB">0</b></div><div class="phase"><span>Pedestrian</span><b id="pedB">IDLE</b></div></article>
+</div>
+<div class="wave-panel"><div><span>Green-wave</span><strong id="waveStatus">Waiting</strong></div><div class="wave-track"><div id="waveBar"></div></div><small id="waveText">Junction B NS green is triggered after the configured delay.</small></div>
+</section>
+
+<section id="verification" class="section"><div class="section-title"><span>03</span><h2>Verification Dashboard</h2></div>
+<div class="table-wrap"><table><thead><tr><th>Requirement</th><th>Verification</th><th>Status</th></tr></thead><tbody>
+<tr><td>Timer parameterization</td><td>Targets 3 / 7 / 12 plus zero-target test</td><td>PASS</td></tr>
+<tr><td>Moore FSM sequence</td><td>NS Green → Yellow → All Red → EW Green → Yellow → All Red</td><td>PASS</td></tr>
+<tr><td>Pedestrian fairness</td><td>Round-robin arbitration over repeated simultaneous requests</td><td>PASS</td></tr>
+<tr><td>Emergency override</td><td>Both junctions enter ALL RED within bounded synchronous response</td><td>PASS</td></tr>
+<tr><td>Adaptive timing</td><td>3-bit density, minimum/maximum green limits</td><td>PASS</td></tr>
+<tr><td>Green-wave</td><td>A NS-green start generates delayed B trigger</td><td>PASS</td></tr>
+<tr><td>Reset during operation</td><td>Mid-simulation reset returns to safe state</td><td>PASS</td></tr>
+</tbody></table></div>
+</section>
+
+<section id="deliverables" class="section"><div class="section-title"><span>04</span><h2>Project Deliverables</h2></div>
+<div class="cards"><div class="mini"><h3>RTL</h3><p>generic_timer, junction_controller, ped_arbiter, green_wave_controller and amtgc_top.</p></div><div class="mini"><h3>Testbenches</h3><p>Standalone timer/junction tests plus unified integration verification.</p></div><div class="mini"><h3>Documentation</h3><p>Architecture, FSM, verification plan, coverage and delivery notes.</p></div><div class="mini"><h3>Simulation</h3><p>VCD/EPWave-compatible waveform generation and self-checking testbench structure.</p></div></div>
+<div class="repo-box"><b>GitHub Repository</b><code>Replace this text with your public GitHub repository URL after upload.</code></div>
+</section>
+</main>
+<footer><span>AMTGC • SystemVerilog RTL Project</span><span>Professional static project website</span></footer>
+<script src="app.js"></script>
+</body></html>
